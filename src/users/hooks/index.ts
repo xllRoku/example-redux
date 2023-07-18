@@ -1,6 +1,13 @@
 import { useState } from "react";
 import { FORM_NAMES } from "../components/CreateNewUser";
-import { User, UserId, addNewUser, deleteUserById } from "../store/slice";
+import {
+	User,
+	UserId,
+	UserWithId,
+	addNewUser,
+	deleteUserById,
+	updateUser,
+} from "../store/slice";
 import { useAppDispatch } from "./redux";
 
 export const useUserActions = () => {
@@ -12,11 +19,36 @@ export const useUserActions = () => {
 		);
 	};
 
+	const update = () => {
+		const [editingUser, setEditingUser] = useState<UserWithId[] | undefined>(
+			undefined,
+		);
+
+		const handleEdit = (userToUpdate: UserWithId) => {
+			setEditingUser([userToUpdate]);
+		};
+
+		const handleUpdate = (userToUpdate: UserWithId | undefined) => {
+			dispatch(updateUser(userToUpdate));
+			console.log(editingUser?.filter((user) => user.id !== userToUpdate?.id));
+			setEditingUser(
+				editingUser?.filter((user) => user.id !== userToUpdate?.id),
+			);
+		};
+
+		return {
+			editingUser,
+			handleEdit,
+			handleUpdate,
+			setEditingUser,
+		};
+	};
+
 	const removeUser = (id: UserId) => {
 		dispatch(deleteUserById(id));
 	};
 
-	return { addUser, removeUser };
+	return { addUser, removeUser, update };
 };
 
 export const useAddUser = () => {
@@ -50,3 +82,9 @@ export const useAddUser = () => {
 
 	return { handleSubmit, result };
 };
+
+export type SetEditingUser = React.Dispatch<
+	React.SetStateAction<UserWithId[] | undefined>
+>;
+export type HandleEdit = (userToUpdate: UserWithId) => void;
+export type HandleUpdate = (userToUpdate: UserWithId | undefined) => void;

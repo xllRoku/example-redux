@@ -1,5 +1,4 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import { RootState } from ".";
 
 const DEFAULT_STATE = [
 	{
@@ -54,6 +53,15 @@ export const userSlice = createSlice({
 			const id = action.payload;
 			return state.filter((user) => user.id !== id);
 		},
+		updateUser: (
+			state,
+			action: PayloadAction<Partial<UserWithId | undefined>>,
+		) => {
+			const userToUpdate = state.find((user) => user.id === action.payload?.id);
+			if (userToUpdate) {
+				Object.assign(userToUpdate, action.payload);
+			}
+		},
 		rollbackUser: (state, action: PayloadAction<UserWithId>) => {
 			const isUserAlreadyDefined = state.some(
 				(user) => user.id === action.payload.id,
@@ -65,7 +73,6 @@ export const userSlice = createSlice({
 	},
 });
 
-export const selectUserData = (state: RootState) => state.users;
-
 export default userSlice.reducer;
-export const { deleteUserById, addNewUser, rollbackUser } = userSlice.actions;
+export const { deleteUserById, addNewUser, rollbackUser, updateUser } =
+	userSlice.actions;

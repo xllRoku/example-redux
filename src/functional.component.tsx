@@ -1,7 +1,7 @@
 import React from "react";
 
 interface IProps {
-	predicate: boolean | undefined | string;
+	predicate: boolean | undefined | string | unknown;
 	children: React.ReactNode;
 }
 
