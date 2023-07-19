@@ -1,21 +1,17 @@
 import { configureStore, type Middleware } from "@reduxjs/toolkit";
-import { client } from "../../client";
 import { errorMessage, succesMessage } from "../../toast";
+import { client } from "../client";
 import usersReducer, { UserWithId, rollbackUser } from "./slice";
 
 const persistanceLocalStorageMiddleware: Middleware =
 	(store) => (next) => (action) => {
-		console.log(store.getState());
-		console.log(action);
 		next(action);
 		localStorage.setItem("__redux__state__", JSON.stringify(store.getState()));
-		console.log(store.getState());
 	};
 
 const handleAddNewUser = (userToAdd: UserWithId) => {
 	client("users", "POST", userToAdd)
 		.then((res) => {
-			console.log("new user", res);
 			if (res) {
 				succesMessage(`Usuario ${res.name} creado correctamente`);
 			}
