@@ -13,5 +13,3 @@ export const useAddUser = () => {
 };
 
 export type ControlInfer = ReturnType<typeof useAddUser>["control"];
-
-type InputName = string;
