@@ -10,21 +10,95 @@ import {
 	TextInput,
 	Title,
 } from "@tremor/react";
+import React from "react";
 import { Else, If, Then } from "../../functional.component";
-import {
-	HandleEdit,
-	HandleUpdate,
-	SetEditingUser,
-	useUserActions,
-} from "../hooks";
+import { UpdateUserInformationProvider, useUpdate } from "../context";
+import { UserToUpdate, useUserActions } from "../hooks";
 import { useAppSelector } from "../hooks/redux";
 import { selectUserData } from "../store";
 import { UserWithId } from "../store/slice";
 import { FORM_NAMES } from "./CreateNewUser";
 
-const UserInformation = ({ user }: { user: UserWithId }) => {
-	console.log("user it's been passed down here", user);
+export function ListOfUsers() {
+	const users = useAppSelector(selectUserData);
+	return (
+		<Card>
+			<Title>
+				Usuarios
+				<Badge>{users.length}</Badge>
+			</Title>
+			<Table>
+				<TableHead>
+					<TableRow>
+						<TableHeaderCell>Id</TableHeaderCell>
+						<TableHeaderCell>Nombre</TableHeaderCell>
+						<TableHeaderCell>Email</TableHeaderCell>
+						<TableHeaderCell>Acciones</TableHeaderCell>
+					</TableRow>
+				</TableHead>
 
+				<TableBody>
+					{users.map((user) => (
+						<TableRow key={user.id}>
+							<UpdateUserInformationProvider>
+								<User user={user} />
+							</UpdateUserInformationProvider>
+						</TableRow>
+					))}
+				</TableBody>
+			</Table>
+		</Card>
+	);
+}
+
+const User: React.FC<{
+	user: UserWithId;
+}> = ({ user }) => {
+	const { stateUserToUpdate, isNotUserToUpdated } = useUpdate();
+
+	return (
+		<>
+			<TableCell>{user.id}</TableCell>
+			{
+				<If predicate={isNotUserToUpdated}>
+					<Then predicate>
+						<UserInformation user={user} />
+					</Then>
+					<Else predicate>
+						{stateUserToUpdate?.map((userToUpdate) =>
+							userToUpdate.id === user.id ? (
+								<EditUser userToUpdate={userToUpdate} />
+							) : null,
+						)}
+					</Else>
+				</If>
+			}
+			<TableCell>
+				<div className="flex items-center gap-2">
+					{
+						<If predicate={isNotUserToUpdated}>
+							<Then predicate>
+								<EditButton user={user} />
+							</Then>
+							<Else predicate>
+								{stateUserToUpdate?.map((userToUpdate) =>
+									userToUpdate.id === user.id ? (
+										<SaveButton userToUpdate={userToUpdate} />
+									) : (
+										<EditButton user={user} />
+									),
+								)}
+							</Else>
+						</If>
+					}
+					<DeleteButton user={user} />
+				</div>
+			</TableCell>
+		</>
+	);
+};
+
+const UserInformation: React.FC<{ user: UserWithId }> = ({ user }) => {
 	return (
 		<>
 			<TableCell
@@ -48,13 +122,11 @@ const UserInformation = ({ user }: { user: UserWithId }) => {
 	);
 };
 
-const EditUser = ({
-	setEditingUser,
-	editingUser,
-}: {
-	setEditingUser: SetEditingUser;
-	editingUser: UserWithId | undefined;
+const EditUser: React.FC<{ userToUpdate: UserToUpdate }> = ({
+	userToUpdate,
 }) => {
+	const { setStateUserToUpdate } = useUpdate();
+
 	return (
 		<>
 			<TableCell
@@ -66,15 +138,17 @@ const EditUser = ({
 						height: "32px",
 						borderRadius: "100vh",
 					}}
-					src={`https://unavatar.io/github/${editingUser?.github}`}
-					alt={editingUser?.name}
+					src={`https://unavatar.io/github/${userToUpdate?.github}`}
+					alt={userToUpdate?.name}
 				/>
 				<TextInput
 					name={FORM_NAMES.NAME}
-					value={editingUser?.name}
+					value={userToUpdate?.name}
 					onChange={(event) => {
-						if (editingUser) {
-							setEditingUser([{ ...editingUser, name: event.target.value }]);
+						if (userToUpdate) {
+							setStateUserToUpdate([
+								{ ...userToUpdate, name: event.target.value },
+							]);
 						}
 					}}
 				/>
@@ -82,10 +156,12 @@ const EditUser = ({
 			<TableCell>
 				<TextInput
 					name={FORM_NAMES.EMAIL}
-					value={editingUser?.email}
+					value={userToUpdate?.email}
 					onChange={(event) => {
-						if (editingUser) {
-							setEditingUser([{ ...editingUser, email: event.target.value }]);
+						if (userToUpdate) {
+							setStateUserToUpdate([
+								{ ...userToUpdate, email: event.target.value },
+							]);
 						}
 					}}
 				/>
@@ -94,121 +170,35 @@ const EditUser = ({
 	);
 };
 
-export function ListOfUsers() {
-	const users = useAppSelector(selectUserData);
-	return (
-		<Card>
-			<Title>
-				Usuarios
-				<Badge>{users.length}</Badge>
-			</Title>
-			<Table>
-				<TableHead>
-					<TableRow>
-						<TableHeaderCell>Id</TableHeaderCell>
-						<TableHeaderCell>Nombre</TableHeaderCell>
-						<TableHeaderCell>Email</TableHeaderCell>
-						<TableHeaderCell>Acciones</TableHeaderCell>
-					</TableRow>
-				</TableHead>
-
-				<TableBody>
-					{users.map((user) => (
-						<TableRow key={user.id}>
-							<User user={user} />
-						</TableRow>
-					))}
-				</TableBody>
-			</Table>
-		</Card>
-	);
-}
-
-const User = ({
-	user,
-}: {
-	user: UserWithId;
-}) => {
-	const { removeUser, update } = useUserActions();
-	const { editingUser, handleEdit, handleUpdate, setEditingUser } = update();
+const DeleteButton: React.FC<{ user: UserWithId }> = ({ user }) => {
+	const { removeUser } = useUserActions();
 
 	return (
-		<>
-			<TableCell>{user.id}</TableCell>
-
-			{
-				<If predicate={editingUser === undefined || editingUser.length === 0}>
-					<Then predicate>
-						<UserInformation user={user} />
-					</Then>
-					<Else predicate>
-						{editingUser?.map((editedUser) =>
-							editedUser.id === user.id ? (
-								<EditUser
-									editingUser={editedUser}
-									setEditingUser={setEditingUser}
-								/>
-							) : (
-								<UserInformation user={user} />
-							),
-						)}
-					</Else>
-				</If>
-			}
-			<TableCell>
-				<div className="flex items-center gap-2">
-					{
-						<If
-							predicate={editingUser === undefined || editingUser.length === 0}
-						>
-							<Then predicate>
-								<EditButton handleEdit={handleEdit} user={user} />
-							</Then>
-							<Else predicate>
-								{editingUser?.map((editedUser) =>
-									editedUser.id === user.id ? (
-										<SaveButton
-											editUser={editedUser}
-											handleUpdate={handleUpdate}
-										/>
-									) : (
-										<EditButton handleEdit={handleEdit} user={user} />
-									),
-								)}
-							</Else>
-						</If>
-					}
-
-					<button type="button" onClick={() => removeUser(user.id)}>
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							fill="none"
-							viewBox="0 0 24 24"
-							strokeWidth={1.5}
-							stroke="currentColor"
-							className="w-6 h-6"
-						>
-							<title>Delete</title>
-							<path
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
-							/>
-						</svg>
-					</button>
-				</div>
-			</TableCell>
-		</>
+		<button type="button" onClick={() => removeUser(user.id)}>
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				fill="none"
+				viewBox="0 0 24 24"
+				strokeWidth={1.5}
+				stroke="currentColor"
+				className="w-6 h-6"
+			>
+				<title>Delete</title>
+				<path
+					strokeLinecap="round"
+					strokeLinejoin="round"
+					d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
+				/>
+			</svg>
+		</button>
 	);
 };
 
-const EditButton = ({
-	handleEdit,
-	user,
-}: {
-	handleEdit: HandleEdit;
+const EditButton: React.FC<{
 	user: UserWithId;
-}) => {
+}> = ({ user }) => {
+	const { handleEdit } = useUpdate();
+
 	return (
 		<button type="button" onClick={() => handleEdit(user)}>
 			<svg
@@ -230,15 +220,13 @@ const EditButton = ({
 	);
 };
 
-const SaveButton = ({
-	handleUpdate,
-	editUser,
-}: {
-	handleUpdate: HandleUpdate;
-	editUser: UserWithId | undefined;
-}) => {
+const SaveButton: React.FC<{
+	userToUpdate: UserToUpdate;
+}> = ({ userToUpdate }) => {
+	const { handleUpdate } = useUpdate();
+
 	return (
-		<button type="button" onClick={() => handleUpdate(editUser)}>
+		<button type="button" onClick={() => handleUpdate(userToUpdate)}>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
 				fill="none"

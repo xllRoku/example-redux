@@ -20,27 +20,30 @@ export const useUserActions = () => {
 	};
 
 	const update = () => {
-		const [editingUser, setEditingUser] = useState<UserWithId[] | undefined>(
-			undefined,
-		);
+		const [stateUserToUpdate, setStateUserToUpdate] = useState<
+			UserWithId[] | undefined
+		>(undefined);
 
 		const handleEdit = (userToUpdate: UserWithId) => {
-			setEditingUser([userToUpdate]);
+			setStateUserToUpdate([userToUpdate]);
 		};
 
-		const handleUpdate = (userToUpdate: UserWithId | undefined) => {
+		const handleUpdate = (userToUpdate: UserToUpdate) => {
 			dispatch(updateUser(userToUpdate));
-			console.log(editingUser?.filter((user) => user.id !== userToUpdate?.id));
-			setEditingUser(
-				editingUser?.filter((user) => user.id !== userToUpdate?.id),
+			setStateUserToUpdate(
+				stateUserToUpdate?.filter((user) => user.id !== userToUpdate?.id),
 			);
 		};
 
+		const isNotUserToUpdated =
+			stateUserToUpdate === undefined || stateUserToUpdate.length === 0;
+
 		return {
-			editingUser,
+			stateUserToUpdate,
 			handleEdit,
 			handleUpdate,
-			setEditingUser,
+			setStateUserToUpdate,
+			isNotUserToUpdated,
 		};
 	};
 
@@ -83,8 +86,9 @@ export const useAddUser = () => {
 	return { handleSubmit, result };
 };
 
+export type UserToUpdate = UserWithId | undefined;
 export type SetEditingUser = React.Dispatch<
 	React.SetStateAction<UserWithId[] | undefined>
 >;
 export type HandleEdit = (userToUpdate: UserWithId) => void;
-export type HandleUpdate = (userToUpdate: UserWithId | undefined) => void;
+export type HandleUpdate = (userToUpdate: UserToUpdate) => void;
