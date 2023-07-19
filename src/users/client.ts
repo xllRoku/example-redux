@@ -1,4 +1,4 @@
-const apiURL = "https://jsonplaceholder.typicode.com";
+import { apiURL } from "./constans";
 
 export const client = (endpoint: string, method = "GET", data?: Object) => {
 	if (method === "DELETE" && data !== undefined) {

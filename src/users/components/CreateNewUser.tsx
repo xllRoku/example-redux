@@ -1,6 +1,6 @@
-import { Badge, Button, Card, TextInput, Title } from "@tremor/react";
-import { If, Then } from "../../functional.component";
+import { Button, Card, Title } from "@tremor/react";
 import { useAddUser } from "../hooks";
+import InputText from "./InputText";
 
 export const FORM_NAMES = {
 	NAME: "name",
@@ -9,34 +9,31 @@ export const FORM_NAMES = {
 };
 
 export const CreateNewUser = () => {
-	const { handleSubmit, result } = useAddUser();
+	const { handleSubmit, onSubmit, control } = useAddUser();
 
 	return (
-		<Card style={{ marginTop: "16px" }}>
+		<Card className="mt-[16px]">
 			<Title>Create New User</Title>
-			<form onSubmit={handleSubmit}>
-				<TextInput name={FORM_NAMES.NAME} placeholder="Aquí el nombre" />
-				<TextInput name={FORM_NAMES.EMAIL} placeholder="Aquí el email" />
-				<TextInput
+			<form onSubmit={handleSubmit(onSubmit)}>
+				<InputText
+					control={control}
+					name={FORM_NAMES.NAME}
+					placeholder="Aquí el nombre"
+				/>
+				<InputText
+					control={control}
+					name={FORM_NAMES.EMAIL}
+					placeholder="Aquí el email"
+				/>
+				<InputText
+					control={control}
 					name={FORM_NAMES.GITHUB}
 					placeholder="Aquí el usuario de github"
 				/>
 				<div>
-					<Button type="submit" style={{ marginTop: "16px" }}>
+					<Button type="submit" className="mt-[16px]">
 						Crear usuario
 					</Button>
-					<span>
-						<If predicate={result === "ok"}>
-							<Then predicate>
-								<Badge color="green">Guardado correctamente</Badge>
-							</Then>
-						</If>
-						<If predicate={result === "ko"}>
-							<Then predicate>
-								<Badge color="red">Error con los campos</Badge>
-							</Then>
-						</If>
-					</span>
 				</div>
 			</form>
 		</Card>

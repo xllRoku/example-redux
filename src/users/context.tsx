@@ -1,18 +1,19 @@
 import { createContext, useContext } from "react";
-import {
+import type {
 	HandleEdit,
 	HandleUpdate,
-	SetEditingUser,
-	useUserActions,
-} from "./hooks";
-import { UserWithId } from "./store/slice";
+	IsNotUserToUpdated,
+	SetStateUserToUpdate,
+	StateUserToUpdate,
+} from "./hooks/actions";
+import { useUserActions } from "./hooks/actions";
 
 interface UpdateUserInformationContextType {
-	stateUserToUpdate: UserWithId[] | undefined;
+	stateUserToUpdate: StateUserToUpdate;
 	handleEdit: HandleEdit;
 	handleUpdate: HandleUpdate;
-	isNotUserToUpdated: boolean;
-	setStateUserToUpdate: SetEditingUser;
+	isNotUserToUpdated: IsNotUserToUpdated;
+	setStateUserToUpdate: SetStateUserToUpdate;
 }
 
 const UpdateUserInformation = createContext<UpdateUserInformationContextType>(

@@ -12,8 +12,9 @@ import {
 } from "@tremor/react";
 import React from "react";
 import { Else, If, Then } from "../../functional.component";
+import { profilePictureUrl } from "../constans";
 import { UpdateUserInformationProvider, useUpdate } from "../context";
-import { UserToUpdate, useUserActions } from "../hooks";
+import { UserToUpdate, useUserActions } from "../hooks/actions";
 import { useAppSelector } from "../hooks/redux";
 import { selectUserData } from "../store";
 import { UserWithId } from "../store/slice";
@@ -41,7 +42,7 @@ export function ListOfUsers() {
 					{users.map((user) => (
 						<TableRow key={user.id}>
 							<UpdateUserInformationProvider>
-								<User user={user} />
+								<UserComponent user={user} />
 							</UpdateUserInformationProvider>
 						</TableRow>
 					))}
@@ -51,7 +52,7 @@ export function ListOfUsers() {
 	);
 }
 
-const User: React.FC<{
+const UserComponent: React.FC<{
 	user: UserWithId;
 }> = ({ user }) => {
 	const { stateUserToUpdate, isNotUserToUpdated } = useUpdate();
@@ -101,18 +102,8 @@ const User: React.FC<{
 const UserInformation: React.FC<{ user: UserWithId }> = ({ user }) => {
 	return (
 		<>
-			<TableCell
-				style={{ display: "flex", alignItems: "center", gap: ".5rem" }}
-			>
-				<img
-					style={{
-						width: "32px",
-						height: "32px",
-						borderRadius: "100vh",
-					}}
-					src={`https://unavatar.io/github/${user.github}`}
-					alt={user.name}
-				/>
+			<TableCell className="flex items-center gap-[.5rem]">
+				<ProfileImage user={user} />
 				<p>{user.name}</p>
 			</TableCell>
 			<TableCell>
@@ -129,18 +120,8 @@ const EditUser: React.FC<{ userToUpdate: UserToUpdate }> = ({
 
 	return (
 		<>
-			<TableCell
-				style={{ display: "flex", alignItems: "center", gap: ".5rem" }}
-			>
-				<img
-					style={{
-						width: "32px",
-						height: "32px",
-						borderRadius: "100vh",
-					}}
-					src={`https://unavatar.io/github/${userToUpdate?.github}`}
-					alt={userToUpdate?.name}
-				/>
+			<TableCell className="flex items-center gap-[.5rem]">
+				<ProfileImage user={userToUpdate} />
 				<TextInput
 					name={FORM_NAMES.NAME}
 					value={userToUpdate?.name}
@@ -167,6 +148,18 @@ const EditUser: React.FC<{ userToUpdate: UserToUpdate }> = ({
 				/>
 			</TableCell>
 		</>
+	);
+};
+
+const ProfileImage: React.FC<{ user: UserWithId | UserToUpdate }> = ({
+	user,
+}) => {
+	return (
+		<img
+			className="w-[32px] h-[32px] rounded-full"
+			src={`${profilePictureUrl}/${user?.github}`}
+			alt={user?.name}
+		/>
 	);
 };
 
