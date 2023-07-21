@@ -1,15 +1,26 @@
-import type { SubmitHandler } from "react-hook-form";
-import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { addUserSchema } from "../schemas";
 import type { AddUserInfo } from "./actions";
 import { useUserActions } from "./actions";
 
 export const useAddUser = () => {
 	const { addUser } = useUserActions();
-	const { handleSubmit, control, reset } = useForm<AddUserInfo>();
+	const {
+		register,
+		handleSubmit,
+		reset,
+		formState: { errors },
+	} = useForm<AddUserInfo>({
+		resolver: zodResolver(addUserSchema),
+	});
 
-	const onSubmit: SubmitHandler<AddUserInfo> = (data) => addUser(data);
+	const onSubmit: SubmitHandler<AddUserInfo> = (data) => {
+		console.log(errors);
+		console.log("IT WORKED", data);
+		addUser(data);
+		reset();
+	};
 
-	return { handleSubmit, control, reset, onSubmit };
+	return { register, handleSubmit, onSubmit, errors };
 };
-
-export type ControlInfer = ReturnType<typeof useAddUser>["control"];

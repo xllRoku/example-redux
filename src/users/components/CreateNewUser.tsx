@@ -1,39 +1,47 @@
 import { Button, Card, Title } from "@tremor/react";
 import { useAddUser } from "../hooks";
-import InputText from "./InputText";
-
-export const FORM_NAMES = {
-	NAME: "name",
-	EMAIL: "email",
-	GITHUB: "github",
-};
 
 export const CreateNewUser = () => {
-	const { handleSubmit, onSubmit, control } = useAddUser();
+	const { handleSubmit, onSubmit, register, errors } = useAddUser();
 
 	return (
 		<Card className="mt-[16px]">
 			<Title>Create New User</Title>
+
 			<form onSubmit={handleSubmit(onSubmit)}>
-				<InputText
-					control={control}
-					name={FORM_NAMES.NAME}
-					placeholder="Aquí el nombre"
-				/>
-				<InputText
-					control={control}
-					name={FORM_NAMES.EMAIL}
-					placeholder="Aquí el email"
-				/>
-				<InputText
-					control={control}
-					name={FORM_NAMES.GITHUB}
-					placeholder="Aquí el usuario de github"
-				/>
-				<div>
-					<Button type="submit" className="mt-[16px]">
-						Crear usuario
-					</Button>
+				<div className="space-y-2">
+					<label className="flex w-full">
+						<input
+							type="text"
+							{...register("name")}
+							className="text-black"
+							placeholder="Aquí va el nombre"
+						/>
+						{errors.name && <span> {errors.name.message}</span>}
+					</label>
+					<label className="flex">
+						<input
+							type="email"
+							{...register("email")}
+							className="text-black"
+							placeholder="Aquí va el email"
+						/>
+						{errors.email && <span> {errors.email.message}</span>}
+					</label>
+					<label className="flex">
+						<input
+							type="text"
+							{...register("github")}
+							className="text-black"
+							placeholder="Aquí va el github"
+						/>
+						{errors.github && <span> {errors.github.message}</span>}
+					</label>
+					<div>
+						<Button type="submit" className="mt-[16px]">
+							Crear usuario
+						</Button>
+					</div>
 				</div>
 			</form>
 		</Card>

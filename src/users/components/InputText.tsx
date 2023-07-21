@@ -1,27 +1,26 @@
-import { TextInput } from "@tremor/react";
-import { PropsWithChildren } from "react"; // Import PropsWithChildren
-import { Controller } from "react-hook-form";
-import { ControlInfer } from "../hooks";
+import type { PropsWithChildren } from "react";
+import { useFormContext } from "react-hook-form";
 
-interface Props extends PropsWithChildren<any> {
-	control: ControlInfer;
-	name: any;
-	defaultValue?: any;
+interface Props extends PropsWithChildren {
+	name: string;
 }
 
-const InputText: React.FC<Props> = ({
-	control,
-	defaultValue,
-	name,
-	...props
-}) => {
+const InputText: React.FC<Props> = ({ name, ...props }) => {
+	const {
+		register,
+		formState: { errors },
+	} = useFormContext();
+
 	return (
-		<Controller
-			render={({ field }) => <TextInput {...field} {...props} />}
-			control={control}
-			name={name}
-			defaultValue={defaultValue}
-		/>
+		<label className="flex w-full">
+			<input
+				type="text"
+				className="text-black"
+				{...register(name)}
+				{...props}
+			/>
+			{errors && <span>{errors.root?.message}</span>}
+		</label>
 	);
 };
 

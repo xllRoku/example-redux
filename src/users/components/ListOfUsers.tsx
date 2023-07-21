@@ -12,13 +12,12 @@ import {
 } from "@tremor/react";
 import React from "react";
 import { Else, If, Then } from "../../functional.component";
-import { profilePictureUrl } from "../constans";
+import { FORM_NAMES, profilePictureUrl } from "../constans";
 import { UpdateUserInformationProvider, useUpdate } from "../context";
 import { UserToUpdate, useUserActions } from "../hooks/actions";
 import { useAppSelector } from "../hooks/redux";
 import { selectUserData } from "../store";
 import { UserWithId } from "../store/slice";
-import { FORM_NAMES } from "./CreateNewUser";
 
 export function ListOfUsers() {
 	const users = useAppSelector(selectUserData);
@@ -118,6 +117,17 @@ const EditUser: React.FC<{ userToUpdate: UserToUpdate }> = ({
 }) => {
 	const { setStateUserToUpdate } = useUpdate();
 
+	const updateProperty = (
+		event: React.ChangeEvent<HTMLInputElement>,
+		propertyToUpdate: keyof UserWithId,
+	) => {
+		if (userToUpdate) {
+			setStateUserToUpdate([
+				{ ...userToUpdate, [propertyToUpdate]: event.target.value },
+			]);
+		}
+	};
+
 	return (
 		<>
 			<TableCell className="flex items-center gap-[.5rem]">
@@ -125,26 +135,14 @@ const EditUser: React.FC<{ userToUpdate: UserToUpdate }> = ({
 				<TextInput
 					name={FORM_NAMES.NAME}
 					value={userToUpdate?.name}
-					onChange={(event) => {
-						if (userToUpdate) {
-							setStateUserToUpdate([
-								{ ...userToUpdate, name: event.target.value },
-							]);
-						}
-					}}
+					onChange={(event) => updateProperty(event, "name")}
 				/>
 			</TableCell>
 			<TableCell>
 				<TextInput
 					name={FORM_NAMES.EMAIL}
 					value={userToUpdate?.email}
-					onChange={(event) => {
-						if (userToUpdate) {
-							setStateUserToUpdate([
-								{ ...userToUpdate, email: event.target.value },
-							]);
-						}
-					}}
+					onChange={(event) => updateProperty(event, "email")}
 				/>
 			</TableCell>
 		</>

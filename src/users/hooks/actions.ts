@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { User, UserId, UserWithId } from "../store/slice";
+import type { UserId, UserWithId } from "../store/slice";
 import { addNewUser, deleteUserById, updateUser } from "../store/slice";
 import { useAppDispatch } from "./redux";
 
@@ -47,7 +47,7 @@ export const useUserActions = () => {
 	return { addUser, removeUser, update };
 };
 
-export type AddUserInfo = Omit<User, "id">;
+export type AddUserInfo = Omit<UserWithId, "id">;
 type UpdateActions = ReturnType<ReturnType<typeof useUserActions>["update"]>;
 export type UserToUpdate = UserWithId | undefined;
 export type StateUserToUpdate = UpdateActions["stateUserToUpdate"];
