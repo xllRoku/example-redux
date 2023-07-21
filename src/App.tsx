@@ -1,13 +1,13 @@
 import { Toaster } from "sonner";
 import "./App.css";
-import { CreateNewUser } from "./users/components/CreateNewUser";
-import { ListOfUsers } from "./users/components/ListOfUsers";
+import { CreateNewUSer } from "./users/components/functional";
+import { ListOfUsers } from "./users/components/interface";
 
 function App() {
 	return (
 		<>
 			<ListOfUsers />
-			<CreateNewUser />
+			<CreateNewUSer />
 			<Toaster richColors />
 		</>
 	);
