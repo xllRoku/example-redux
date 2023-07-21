@@ -2,15 +2,11 @@ import { Button, Card, TableCell, TextInput, Title } from "@tremor/react";
 import { FORM_NAMES } from "../constans";
 import { useUpdate } from "../context";
 import { useAddUser, useUpdateProperty } from "../hooks";
-import { UserToUpdate, useUserActions } from "../hooks/actions";
-import { UserWithId } from "../store/slice";
+import { useUserActions } from "../hooks/actions";
 import { ProfileImage } from "./interface";
+import { UserPropComponent, UserToUpdatePropComponent } from "./types";
 
-export function SaveButton({
-	userToUpdate,
-}: {
-	userToUpdate: UserToUpdate;
-}) {
+export function SaveButton({ userToUpdate }: UserToUpdatePropComponent) {
 	const { handleUpdate } = useUpdate();
 
 	return (
@@ -34,11 +30,7 @@ export function SaveButton({
 	);
 }
 
-export function EditButton({
-	user,
-}: {
-	user: UserWithId;
-}) {
+export function EditButton({ user }: UserPropComponent) {
 	const { handleEdit } = useUpdate();
 
 	return (
@@ -62,7 +54,7 @@ export function EditButton({
 	);
 }
 
-export function DeleteButton({ user }: { user: UserWithId }) {
+export function DeleteButton({ user }: UserPropComponent) {
 	const { removeUser } = useUserActions();
 	return (
 		<button type="button" onClick={() => removeUser(user.id)}>
@@ -85,7 +77,7 @@ export function DeleteButton({ user }: { user: UserWithId }) {
 	);
 }
 
-export function EditUser({ userToUpdate }: { userToUpdate: UserToUpdate }) {
+export function EditUser({ userToUpdate }: UserToUpdatePropComponent) {
 	const { updateProperty } = useUpdateProperty();
 
 	return (

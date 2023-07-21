@@ -18,6 +18,7 @@ import { useAppSelector } from "../hooks/redux";
 import { selectUserData } from "../store";
 import { UserWithId } from "../store/slice";
 import { DeleteButton, EditButton, EditUser, SaveButton } from "./functional";
+import { UserPropComponent } from "./types";
 
 export function ListOfUsers() {
 	const users = useAppSelector(selectUserData);
@@ -51,7 +52,7 @@ export function ListOfUsers() {
 	);
 }
 
-function UserComponent({ user }: { user: UserWithId }) {
+function UserComponent({ user }: UserPropComponent) {
 	const { stateUserToUpdate, ifNotUserToUpdated } = useUpdate();
 	const { buttonState: isButton, user: userToUpdate } = useGetState(
 		stateUserToUpdate,
@@ -93,7 +94,7 @@ function UserComponent({ user }: { user: UserWithId }) {
 	);
 }
 
-function UserInformation({ user }: { user: UserWithId }) {
+function UserInformation({ user }: UserPropComponent) {
 	return (
 		<>
 			<TableCell className="flex items-center gap-[.5rem]">
