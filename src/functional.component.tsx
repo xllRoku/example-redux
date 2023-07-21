@@ -36,4 +36,8 @@ const When: React.FC<IWhenProps> = ({ children, predicate }) => {
 	return !predicate ? <></> : <>{children}</>;
 };
 
-export { Else, If, Then, When };
+const ConditionalRender: React.FC<IProps> = ({ predicate, children }) => {
+	return predicate ? <>{children}</> : null;
+};
+
+export { ConditionalRender, Else, If, Then, When };

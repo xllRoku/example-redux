@@ -2,7 +2,7 @@ import { createContext, useContext } from "react";
 import type {
 	HandleEdit,
 	HandleUpdate,
-	IsNotUserToUpdated,
+	IfNotUserToUpdated,
 	SetStateUserToUpdate,
 	StateUserToUpdate,
 } from "./hooks/actions";
@@ -12,7 +12,7 @@ interface UpdateUserInformationContextType {
 	stateUserToUpdate: StateUserToUpdate;
 	handleEdit: HandleEdit;
 	handleUpdate: HandleUpdate;
-	isNotUserToUpdated: IsNotUserToUpdated;
+	ifNotUserToUpdated: IfNotUserToUpdated;
 	setStateUserToUpdate: SetStateUserToUpdate;
 }
 
@@ -29,7 +29,7 @@ const UpdateUserInformationProvider = ({
 		stateUserToUpdate,
 		handleEdit,
 		handleUpdate,
-		isNotUserToUpdated,
+		ifNotUserToUpdated,
 		setStateUserToUpdate,
 	} = update();
 
@@ -37,7 +37,7 @@ const UpdateUserInformationProvider = ({
 		stateUserToUpdate,
 		handleEdit,
 		handleUpdate,
-		isNotUserToUpdated,
+		ifNotUserToUpdated,
 		setStateUserToUpdate,
 	};
 

@@ -28,7 +28,7 @@ export const useUserActions = () => {
 			);
 		};
 
-		const isNotUserToUpdated =
+		const ifNotUserToUpdated =
 			stateUserToUpdate === undefined || stateUserToUpdate.length === 0;
 
 		return {
@@ -36,7 +36,7 @@ export const useUserActions = () => {
 			handleEdit,
 			handleUpdate,
 			setStateUserToUpdate,
-			isNotUserToUpdated,
+			ifNotUserToUpdated,
 		};
 	};
 
@@ -52,6 +52,6 @@ type UpdateActions = ReturnType<ReturnType<typeof useUserActions>["update"]>;
 export type UserToUpdate = UserWithId | undefined;
 export type StateUserToUpdate = UpdateActions["stateUserToUpdate"];
 export type SetStateUserToUpdate = UpdateActions["setStateUserToUpdate"];
-export type IsNotUserToUpdated = UpdateActions["isNotUserToUpdated"];
+export type IfNotUserToUpdated = UpdateActions["ifNotUserToUpdated"];
 export type HandleEdit = UpdateActions["handleEdit"];
 export type HandleUpdate = UpdateActions["handleUpdate"];

@@ -1,7 +1,7 @@
 import { Button, Card, TableCell, TextInput, Title } from "@tremor/react";
 import { FORM_NAMES } from "../constans";
 import { useUpdate } from "../context";
-import { useAddUser } from "../hooks";
+import { useAddUser, useUpdateProperty } from "../hooks";
 import { UserToUpdate, useUserActions } from "../hooks/actions";
 import { UserWithId } from "../store/slice";
 import { ProfileImage } from "./interface";
@@ -86,18 +86,7 @@ export function DeleteButton({ user }: { user: UserWithId }) {
 }
 
 export function EditUser({ userToUpdate }: { userToUpdate: UserToUpdate }) {
-	const { setStateUserToUpdate } = useUpdate();
-
-	const updateProperty = (
-		event: React.ChangeEvent<HTMLInputElement>,
-		propertyToUpdate: keyof UserWithId,
-	) => {
-		if (userToUpdate) {
-			setStateUserToUpdate([
-				{ ...userToUpdate, [propertyToUpdate]: event.target.value },
-			]);
-		}
-	};
+	const { updateProperty } = useUpdateProperty();
 
 	return (
 		<>
@@ -106,14 +95,14 @@ export function EditUser({ userToUpdate }: { userToUpdate: UserToUpdate }) {
 				<TextInput
 					name={FORM_NAMES.NAME}
 					value={userToUpdate?.name}
-					onChange={(event) => updateProperty(event, "name")}
+					onChange={(event) => updateProperty(event, userToUpdate, "name")}
 				/>
 			</TableCell>
 			<TableCell>
 				<TextInput
 					name={FORM_NAMES.EMAIL}
 					value={userToUpdate?.email}
-					onChange={(event) => updateProperty(event, "email")}
+					onChange={(event) => updateProperty(event, userToUpdate, "email")}
 				/>
 			</TableCell>
 		</>

@@ -9,9 +9,10 @@ import {
 	TableRow,
 	Title,
 } from "@tremor/react";
-import { Else, If, Then } from "../../functional.component";
+import { ConditionalRender } from "../../functional.component";
 import { profilePictureUrl } from "../constans";
 import { UpdateUserInformationProvider, useUpdate } from "../context";
+import { useGetState } from "../hooks";
 import { UserToUpdate } from "../hooks/actions";
 import { useAppSelector } from "../hooks/redux";
 import { selectUserData } from "../store";
@@ -51,43 +52,40 @@ export function ListOfUsers() {
 }
 
 function UserComponent({ user }: { user: UserWithId }) {
-	const { stateUserToUpdate, isNotUserToUpdated } = useUpdate();
+	const { stateUserToUpdate, ifNotUserToUpdated } = useUpdate();
+	const { buttonState: isButton, user: userToUpdate } = useGetState(
+		stateUserToUpdate,
+		user,
+	);
 
 	return (
 		<>
 			<TableCell>{user.id}</TableCell>
-			{
-				<If predicate={isNotUserToUpdated}>
-					<Then predicate>
-						<UserInformation user={user} />
-					</Then>
-					<Else predicate>
-						{stateUserToUpdate?.map((userToUpdate) =>
-							userToUpdate.id === user.id ? (
-								<EditUser userToUpdate={userToUpdate} />
-							) : null,
-						)}
-					</Else>
-				</If>
-			}
+
+			<ConditionalRender predicate={ifNotUserToUpdated}>
+				<UserInformation user={user} />
+			</ConditionalRender>
+
+			<ConditionalRender predicate={!ifNotUserToUpdated}>
+				<EditUser userToUpdate={userToUpdate} />
+			</ConditionalRender>
+
 			<TableCell>
 				<div className="flex items-center gap-2">
-					{
-						<If predicate={isNotUserToUpdated}>
-							<Then predicate>
-								<EditButton user={user} />
-							</Then>
-							<Else predicate>
-								{stateUserToUpdate?.map((userToUpdate) =>
-									userToUpdate.id === user.id ? (
-										<SaveButton userToUpdate={userToUpdate} />
-									) : (
-										<EditButton user={user} />
-									),
-								)}
-							</Else>
-						</If>
-					}
+					<ConditionalRender predicate={ifNotUserToUpdated}>
+						<EditButton user={user} />
+					</ConditionalRender>
+
+					<ConditionalRender predicate={!ifNotUserToUpdated}>
+						<ConditionalRender predicate={isButton.save}>
+							<SaveButton userToUpdate={userToUpdate} />
+						</ConditionalRender>
+
+						<ConditionalRender predicate={isButton.edit}>
+							<EditButton user={user} />
+						</ConditionalRender>
+					</ConditionalRender>
+
 					<DeleteButton user={user} />
 				</div>
 			</TableCell>
