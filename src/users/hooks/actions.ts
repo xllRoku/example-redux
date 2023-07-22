@@ -26,7 +26,13 @@ export const useUserManagement = (): UserRepository => {
 	};
 
 	const update = (userToUpdate: UserToUpdate) => {
-		dispatch(updateUser(userToUpdate));
+		dispatch(
+			updateUser({
+				...userToUpdate,
+				name: userToUpdate?.name,
+				email: userToUpdate?.email,
+			}),
+		);
 	};
 
 	const remove = (id: string) => {
@@ -50,7 +56,13 @@ export const useUpdateUser = (update: UserRepository["update"]) => {
 
 	const handleUpdate = useCallback(
 		(userToUpdate: UserToUpdate) => {
-			update(userToUpdate);
+			if (userToUpdate) {
+				update({
+					...userToUpdate,
+					name: userToUpdate?.name,
+					email: userToUpdate?.email,
+				});
+			}
 			setStateUserToUpdate(
 				stateUserToUpdate?.filter((user) => user.id !== userToUpdate?.id),
 			);

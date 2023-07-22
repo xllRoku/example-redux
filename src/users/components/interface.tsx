@@ -113,7 +113,7 @@ export function EditUser({
 	return (
 		<>
 			<TableCell className="flex items-center gap-[.5rem]">
-				<ProfileImage user={userToUpdate} />
+				<ProfileImage user={user} />
 				<TextInput
 					name={FORM_NAMES.NAME}
 					value={userToUpdate?.name}

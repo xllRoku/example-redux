@@ -8,4 +8,4 @@ export type UserPropChildComponent = {
 	isButton: ButtonState;
 };
 export type UserToUpdatePropComponent = { userToUpdate: UserToUpdate };
-export type ProfileImageProp = { user: User | UserToUpdate };
+export type ProfileImageProp = { user: User };
