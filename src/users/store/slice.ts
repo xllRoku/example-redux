@@ -1,4 +1,6 @@
-import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import type { PayloadAction } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
+import type { CreateUserInfo, User } from "../models";
 
 const DEFAULT_STATE = [
 	{
@@ -21,19 +23,7 @@ const DEFAULT_STATE = [
 	},
 ];
 
-export type UserId = string;
-
-export interface User {
-	name: string;
-	email: string;
-	github: string;
-}
-
-export interface UserWithId extends User {
-	id: UserId;
-}
-
-const initialState: UserWithId[] = (() => {
+const initialState: User[] = (() => {
 	const persistedState = localStorage.getItem("__redux__state__");
 	if (persistedState) {
 		return JSON.parse(persistedState).users;
@@ -45,24 +35,21 @@ export const userSlice = createSlice({
 	name: "users",
 	initialState,
 	reducers: {
-		addNewUser: (state, action: PayloadAction<User>) => {
+		createNewUser: (state, action: PayloadAction<CreateUserInfo>) => {
 			const id = crypto.randomUUID();
 			state.push({ id, ...action.payload });
 		},
-		deleteUserById: (state, action: PayloadAction<UserId>) => {
+		deleteUserById: (state, action: PayloadAction<string>) => {
 			const id = action.payload;
 			return state.filter((user) => user.id !== id);
 		},
-		updateUser: (
-			state,
-			action: PayloadAction<Partial<UserWithId | undefined>>,
-		) => {
+		updateUser: (state, action: PayloadAction<Partial<User | undefined>>) => {
 			const userToUpdate = state.find((user) => user.id === action.payload?.id);
 			if (userToUpdate) {
 				Object.assign(userToUpdate, action.payload);
 			}
 		},
-		rollbackUser: (state, action: PayloadAction<UserWithId>) => {
+		rollbackUser: (state, action: PayloadAction<User>) => {
 			const isUserAlreadyDefined = state.some(
 				(user) => user.id === action.payload.id,
 			);
@@ -74,5 +61,5 @@ export const userSlice = createSlice({
 });
 
 export default userSlice.reducer;
-export const { deleteUserById, addNewUser, rollbackUser, updateUser } =
+export const { deleteUserById, createNewUser, rollbackUser, updateUser } =
 	userSlice.actions;

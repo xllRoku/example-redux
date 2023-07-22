@@ -1,13 +1,10 @@
-import { Button, Card, TableCell, TextInput, Title } from "@tremor/react";
-import { FORM_NAMES } from "../constans";
-import { useUpdate } from "../context";
-import { useAddUser, useUpdateProperty } from "../hooks";
-import { useUserActions } from "../hooks/actions";
-import { ProfileImage } from "./interface";
+import { Button, Card, Title } from "@tremor/react";
+import { useUpdateUserInformation } from "../context/updateUserInformation";
+import { useCreateUser, useUserManagement } from "../hooks/actions";
 import { UserPropComponent, UserToUpdatePropComponent } from "./types";
 
 export function SaveButton({ userToUpdate }: UserToUpdatePropComponent) {
-	const { handleUpdate } = useUpdate();
+	const { handleUpdate } = useUpdateUserInformation();
 
 	return (
 		<button type="button" onClick={() => handleUpdate(userToUpdate)}>
@@ -31,7 +28,7 @@ export function SaveButton({ userToUpdate }: UserToUpdatePropComponent) {
 }
 
 export function EditButton({ user }: UserPropComponent) {
-	const { handleEdit } = useUpdate();
+	const { handleEdit } = useUpdateUserInformation();
 
 	return (
 		<button type="button" onClick={() => handleEdit(user)}>
@@ -55,9 +52,9 @@ export function EditButton({ user }: UserPropComponent) {
 }
 
 export function DeleteButton({ user }: UserPropComponent) {
-	const { removeUser } = useUserActions();
+	const { remove } = useUserManagement();
 	return (
-		<button type="button" onClick={() => removeUser(user.id)}>
+		<button type="button" onClick={() => remove(user.id)}>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
 				fill="none"
@@ -77,32 +74,9 @@ export function DeleteButton({ user }: UserPropComponent) {
 	);
 }
 
-export function EditUser({ userToUpdate }: UserToUpdatePropComponent) {
-	const { updateProperty } = useUpdateProperty();
-
-	return (
-		<>
-			<TableCell className="flex items-center gap-[.5rem]">
-				<ProfileImage user={userToUpdate} />
-				<TextInput
-					name={FORM_NAMES.NAME}
-					value={userToUpdate?.name}
-					onChange={(event) => updateProperty(event, userToUpdate, "name")}
-				/>
-			</TableCell>
-			<TableCell>
-				<TextInput
-					name={FORM_NAMES.EMAIL}
-					value={userToUpdate?.email}
-					onChange={(event) => updateProperty(event, userToUpdate, "email")}
-				/>
-			</TableCell>
-		</>
-	);
-}
-
 export function CreateNewUSer() {
-	const { handleSubmit, onSubmit, register, errors } = useAddUser();
+	const { create } = useUserManagement();
+	const { handleSubmit, onSubmit, register, errors } = useCreateUser(create);
 
 	return (
 		<Card className="mt-[16px]">

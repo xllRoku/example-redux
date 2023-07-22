@@ -2,7 +2,8 @@ import { Middleware } from "@reduxjs/toolkit";
 import { RootState, store } from ".";
 import { errorMessage, succesMessage } from "../../toast";
 import { client } from "../client";
-import { UserWithId, rollbackUser } from "./slice";
+import { User } from "../models";
+import { rollbackUser } from "./slice";
 
 export const persistanceLocalStorageMiddleware: Middleware =
 	(store) => (next) => (action) => {
@@ -10,7 +11,7 @@ export const persistanceLocalStorageMiddleware: Middleware =
 		localStorage.setItem("__redux__state__", JSON.stringify(store.getState()));
 	};
 
-const handleAddNewUser = (userToAdd: UserWithId) => {
+const handleAddNewUser = (userToAdd: User) => {
 	client("users", "POST", userToAdd)
 		.then((res) => {
 			if (res) {
@@ -28,8 +29,8 @@ const handleDeleteUserById = (
 	previousState: RootState,
 ) => {
 	const userToRemove = previousState.users.find(
-		(user: UserWithId) => user.id === userIdToRemove,
-	) as UserWithId;
+		(user: User) => user.id === userIdToRemove,
+	) as User;
 
 	client(`users/${userIdToRemove}`, "DELETE")
 		.then((res) => {
@@ -53,7 +54,7 @@ export const syncWithDatabaseMiddleware: Middleware =
 
 		switch (action.type) {
 			case "users/addNewUser":
-				handleAddNewUser(action.payload as UserWithId);
+				handleAddNewUser(action.payload as User);
 				break;
 			case "users/deleteUserById":
 				handleDeleteUserById(action.payload as string, previousState);

@@ -1,14 +1,15 @@
 import { createContext, useContext } from "react";
-import type {
-	HandleEdit,
-	HandleUpdate,
-	IfNotUserToUpdated,
-	SetStateUserToUpdate,
-	StateUserToUpdate,
-} from "./hooks/actions";
-import { useUserActions } from "./hooks/actions";
+import {
+	useUpdateUser,
+	useUserManagement,
+	type HandleEdit,
+	type HandleUpdate,
+	type IfNotUserToUpdated,
+	type SetStateUserToUpdate,
+	type StateUserToUpdate,
+} from "../hooks/actions";
 
-interface UpdateUserInformationContextType {
+interface UpdateUserInformationContext {
 	stateUserToUpdate: StateUserToUpdate;
 	handleEdit: HandleEdit;
 	handleUpdate: HandleUpdate;
@@ -16,22 +17,21 @@ interface UpdateUserInformationContextType {
 	setStateUserToUpdate: SetStateUserToUpdate;
 }
 
-const UpdateUserInformation = createContext<UpdateUserInformationContextType>(
-	{} as UpdateUserInformationContextType,
+const UpdateUserInformation = createContext<UpdateUserInformationContext>(
+	{} as UpdateUserInformationContext,
 );
 
-const UpdateUserInformationProvider = ({
+function UpdateUserInformationProvider({
 	children,
-}: { children: React.ReactNode }) => {
-	const { update } = useUserActions();
-
+}: { children: React.ReactNode }) {
+	const { update } = useUserManagement();
 	const {
-		stateUserToUpdate,
 		handleEdit,
 		handleUpdate,
 		ifNotUserToUpdated,
 		setStateUserToUpdate,
-	} = update();
+		stateUserToUpdate,
+	} = useUpdateUser(update);
 
 	const value = {
 		stateUserToUpdate,
@@ -46,9 +46,9 @@ const UpdateUserInformationProvider = ({
 			{children}
 		</UpdateUserInformation.Provider>
 	);
-};
+}
 
-const useUpdate = () => {
+const useUpdateUserInformation = () => {
 	const context = useContext(UpdateUserInformation);
 	if (context === undefined) {
 		throw new Error("useUpdate must be used within a AuthProvider");
@@ -56,4 +56,4 @@ const useUpdate = () => {
 	return context;
 };
 
-export { UpdateUserInformationProvider, useUpdate };
+export { UpdateUserInformationProvider, useUpdateUserInformation };

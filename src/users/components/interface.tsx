@@ -7,21 +7,29 @@ import {
 	TableHead,
 	TableHeaderCell,
 	TableRow,
+	TextInput,
 	Title,
 } from "@tremor/react";
 import { ConditionalRender } from "../../functional.component";
-import { profilePictureUrl } from "../constans";
-import { UpdateUserInformationProvider, useUpdate } from "../context";
-import { useGetState } from "../hooks";
-import { UserToUpdate } from "../hooks/actions";
-import { useAppSelector } from "../hooks/redux";
-import { selectUserData } from "../store";
-import { UserWithId } from "../store/slice";
-import { DeleteButton, EditButton, EditUser, SaveButton } from "./functional";
-import { UserPropComponent } from "./types";
+import { FORM_NAMES, profilePictureUrl } from "../constans";
+import {
+	UpdateUserInformationProvider,
+	useUpdateUserInformation,
+} from "../context/updateUserInformation";
+import { useGetUserToUpdate, useUpdateProperty } from "../hooks";
+import { useUserManagement } from "../hooks/actions";
+import { DeleteButton, EditButton, SaveButton } from "./functional";
+import {
+	ProfileImageProp,
+	UserPropChildComponent,
+	UserPropComponent,
+} from "./types";
 
 export function ListOfUsers() {
-	const users = useAppSelector(selectUserData);
+	const { getUsers } = useUserManagement();
+
+	const users = getUsers();
+
 	return (
 		<Card>
 			<Title>
@@ -37,7 +45,6 @@ export function ListOfUsers() {
 						<TableHeaderCell>Acciones</TableHeaderCell>
 					</TableRow>
 				</TableHead>
-
 				<TableBody>
 					{users.map((user) => (
 						<TableRow key={user.id}>
@@ -53,8 +60,8 @@ export function ListOfUsers() {
 }
 
 function UserComponent({ user }: UserPropComponent) {
-	const { stateUserToUpdate, ifNotUserToUpdated } = useUpdate();
-	const { buttonState: isButton, user: userToUpdate } = useGetState(
+	const { stateUserToUpdate, ifNotUserToUpdated } = useUpdateUserInformation();
+	const { buttonState: isButton, user: userToUpdate } = useGetUserToUpdate(
 		stateUserToUpdate,
 		user,
 	);
@@ -62,39 +69,26 @@ function UserComponent({ user }: UserPropComponent) {
 	return (
 		<>
 			<TableCell>{user.id}</TableCell>
-
 			<ConditionalRender predicate={ifNotUserToUpdated}>
-				<UserInformation user={user} />
+				<UserInformation
+					user={user}
+					userToUpdate={userToUpdate}
+					isButton={isButton}
+				/>
 			</ConditionalRender>
 
 			<ConditionalRender predicate={!ifNotUserToUpdated}>
-				<EditUser userToUpdate={userToUpdate} />
+				<EditUser user={user} userToUpdate={userToUpdate} isButton={isButton} />
 			</ConditionalRender>
-
-			<TableCell>
-				<div className="flex items-center gap-2">
-					<ConditionalRender predicate={ifNotUserToUpdated}>
-						<EditButton user={user} />
-					</ConditionalRender>
-
-					<ConditionalRender predicate={!ifNotUserToUpdated}>
-						<ConditionalRender predicate={isButton.save}>
-							<SaveButton userToUpdate={userToUpdate} />
-						</ConditionalRender>
-
-						<ConditionalRender predicate={isButton.edit}>
-							<EditButton user={user} />
-						</ConditionalRender>
-					</ConditionalRender>
-
-					<DeleteButton user={user} />
-				</div>
-			</TableCell>
 		</>
 	);
 }
 
-function UserInformation({ user }: UserPropComponent) {
+function UserInformation({
+	user,
+	userToUpdate,
+	isButton,
+}: UserPropChildComponent) {
 	return (
 		<>
 			<TableCell className="flex items-center gap-[.5rem]">
@@ -104,11 +98,58 @@ function UserInformation({ user }: UserPropComponent) {
 			<TableCell>
 				<p>{user.email}</p>
 			</TableCell>
+			<Actions user={user} userToUpdate={userToUpdate} isButton={isButton} />
 		</>
 	);
 }
 
-export function ProfileImage({ user }: { user: UserWithId | UserToUpdate }) {
+export function EditUser({
+	user,
+	userToUpdate,
+	isButton,
+}: UserPropChildComponent) {
+	const { updateProperty } = useUpdateProperty();
+
+	return (
+		<>
+			<TableCell className="flex items-center gap-[.5rem]">
+				<ProfileImage user={userToUpdate} />
+				<TextInput
+					name={FORM_NAMES.NAME}
+					value={userToUpdate?.name}
+					onChange={(event) => updateProperty(event, userToUpdate, "name")}
+				/>
+			</TableCell>
+			<TableCell>
+				<TextInput
+					name={FORM_NAMES.EMAIL}
+					value={userToUpdate?.email}
+					onChange={(event) => updateProperty(event, userToUpdate, "email")}
+				/>
+			</TableCell>
+			<Actions user={user} userToUpdate={userToUpdate} isButton={isButton} />
+		</>
+	);
+}
+
+function Actions({ user, userToUpdate, isButton }: UserPropChildComponent) {
+	return (
+		<TableCell>
+			<div className="flex items-center gap-2">
+				<ConditionalRender predicate={isButton.save}>
+					<SaveButton userToUpdate={userToUpdate} />
+				</ConditionalRender>
+
+				<ConditionalRender predicate={isButton.edit}>
+					<EditButton user={user} />
+				</ConditionalRender>
+				<DeleteButton user={user} />
+			</div>
+		</TableCell>
+	);
+}
+
+export function ProfileImage({ user }: ProfileImageProp) {
 	return (
 		<img
 			className="w-[32px] h-[32px] rounded-full"
