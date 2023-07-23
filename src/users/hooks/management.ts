@@ -77,65 +77,87 @@ export const useUpdateUser = (update: UserRepository["update"]) => {
 		[setStateUserToUpdate],
 	);
 
+	const validateUser = (userToUpdate: User) => {
+		const currentUser = stateUserToUpdate.users?.find(
+			(currentState) => currentState.id === userToUpdate.id,
+		);
+
+		if (!currentUser) {
+			return { name: { message: "" }, email: { message: "" } };
+		}
+
+		const errors = {
+			name: { message: "" },
+			email: { message: "" },
+		};
+
+		if (
+			!(currentUser.name !== userToUpdate.name) &&
+			userToUpdate.name.length < 3
+		) {
+			errors.name.message = "Hay un error en el nombre";
+		}
+
+		if (
+			!(currentUser.email !== userToUpdate.email) &&
+			!EMAIL_REGEX.test(userToUpdate.email)
+		) {
+			errors.email.message = "Hay un error en el email";
+		}
+
+		return errors;
+	};
+
+	const resetErrors = () => {
+		setStateUserToUpdate((prevState) => ({
+			users: prevState.users,
+			errors: {
+				email: { message: "" },
+				name: { message: "" },
+			},
+		}));
+	};
+
+	const setUserToUpdateErrors = (errors: {
+		name: {
+			message: string;
+		};
+		email: {
+			message: string;
+		};
+	}) => {
+		setStateUserToUpdate((prevState) => ({
+			...prevState,
+			errors: {
+				...prevState.errors,
+				name: { message: errors.name.message },
+				email: { message: errors.email.message },
+			},
+		}));
+	};
+
+	const takeOutUser = (userToUpdate: User) =>
+		stateUserToUpdate?.users?.filter((user) => user.id !== userToUpdate?.id);
+
 	const handleUpdate = useCallback(
 		(userToUpdate: UserToUpdate) => {
 			if (userToUpdate) {
-				stateUserToUpdate.users?.forEach((currentState) => {
-					if (currentState.id === userToUpdate.id) {
-						setStateUserToUpdate((prevState) => ({
-							...prevState,
-							errors: {
-								name: { message: "" },
-								email: { message: "" },
-							},
-						}));
+				resetErrors();
+				const errors = validateUser(userToUpdate);
 
-						if (
-							(!(currentState.name !== userToUpdate.name) &&
-								userToUpdate.name.length < 3) ||
-							(!(currentState.email !== userToUpdate.email) &&
-								!EMAIL_REGEX.test(userToUpdate.email))
-						) {
-							if (
-								!(currentState.name !== userToUpdate.name) &&
-								userToUpdate.name.length < 3
-							) {
-								setStateUserToUpdate((prevState) => ({
-									...prevState,
-									errors: {
-										...prevState.errors,
-										name: { message: "Hay un error en el nombre" },
-									},
-								}));
-							}
-
-							if (
-								!(currentState.email !== userToUpdate.email) &&
-								!EMAIL_REGEX.test(userToUpdate.email)
-							) {
-								setStateUserToUpdate((prevState) => ({
-									...prevState,
-									errors: {
-										...prevState.errors,
-										email: { message: "Hay un error en el email" },
-									},
-								}));
-							}
-						} else {
-							update({
-								...userToUpdate,
-								name: userToUpdate?.name,
-								email: userToUpdate?.email,
-							});
-							setStateUserToUpdate((prevState) => ({
-								...prevState,
-								users: stateUserToUpdate?.users?.filter(
-									(user) => user.id !== userToUpdate?.id,
-								),
-							}));
-						}
-					}
-				});
+				if (errors.name.message || errors.email.message) {
+					setUserToUpdateErrors(errors);
+				} else {
+					update({
+						...userToUpdate,
+						name: userToUpdate?.name,
+						email: userToUpdate?.email,
+					});
+					setStateUserToUpdate((prevState) => ({
+						...prevState,
+						users: takeOutUser(userToUpdate),
+					}));
+				}
 			}
 		},
 		[stateUserToUpdate, setStateUserToUpdate],
