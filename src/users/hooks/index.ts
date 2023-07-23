@@ -15,7 +15,7 @@ export const useGetUserToUpdate = (
 	};
 
 	if (stateUserToUpdate) {
-		stateUserToUpdate?.forEach((userToUpdate) => {
+		stateUserToUpdate?.users?.forEach((userToUpdate) => {
 			if (userToUpdate?.id === currentUser.id) {
 				state.buttonState.save = true;
 				state.buttonState.edit = false;
@@ -36,9 +36,14 @@ export const useUpdateUserProperty = () => {
 		propertyToUpdate: keyof User,
 	) => {
 		if (userToUpdate) {
-			setStateUserToUpdate([
-				{ ...userToUpdate, [propertyToUpdate]: event.target.value },
-			]);
+			setStateUserToUpdate((prevState) => ({
+				...prevState,
+				users: prevState.users?.map((user) =>
+					user.id === userToUpdate.id
+						? { ...user, [propertyToUpdate]: event.target.value }
+						: user,
+				),
+			}));
 		}
 	};
 

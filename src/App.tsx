@@ -1,7 +1,6 @@
 import { Toaster } from "sonner";
 import "./App.css";
-import { CreateNewUSer } from "./users/components/functional";
-import { ListOfUsers } from "./users/components/interface";
+import { CreateNewUSer, ListOfUsers } from "./users/components";
 
 function App() {
 	return (

@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useCallback, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { CreateUserInfo, User, UserRepository, UserToUpdate } from "../models";
-import { addUserSchema } from "../schemas";
+import { EMAIL_REGEX, addUserSchema } from "../schemas";
 import { selectUserData } from "../store";
 import {
 	createNewUser,
@@ -47,13 +47,32 @@ export const useUserManagement = (): UserRepository => {
 };
 
 export const useUpdateUser = (update: UserRepository["update"]) => {
-	const [stateUserToUpdate, setStateUserToUpdate] = useState<
-		User[] | undefined
-	>(undefined);
+	const state = {
+		users: undefined,
+		errors: {
+			email: {
+				message: "",
+			},
+			name: {
+				message: "",
+			},
+		},
+	};
+
+	const [stateUserToUpdate, setStateUserToUpdate] = useState<{
+		users: User[] | undefined;
+		errors: {
+			name: { message: string | null };
+			email: { message: string | null };
+		};
+	}>(state);
 
 	const handleEdit = useCallback(
 		(userToUpdate: User) => {
-			setStateUserToUpdate([userToUpdate]);
+			setStateUserToUpdate((prevState) => ({
+				...prevState,
+				users: [...(prevState.users || []), userToUpdate],
+			}));
 		},
 		[setStateUserToUpdate],
 	);
@@ -61,21 +80,70 @@ export const useUpdateUser = (update: UserRepository["update"]) => {
 	const handleUpdate = useCallback(
 		(userToUpdate: UserToUpdate) => {
 			if (userToUpdate) {
-				update({
-					...userToUpdate,
-					name: userToUpdate?.name,
-					email: userToUpdate?.email,
+				stateUserToUpdate.users?.forEach((currentState) => {
+					if (currentState.id === userToUpdate.id) {
+						setStateUserToUpdate((prevState) => ({
+							...prevState,
+							errors: {
+								name: { message: "" },
+								email: { message: "" },
+							},
+						}));
+
+						if (
+							(!(currentState.name !== userToUpdate.name) &&
+								userToUpdate.name.length < 3) ||
+							(!(currentState.email !== userToUpdate.email) &&
+								!EMAIL_REGEX.test(userToUpdate.email))
+						) {
+							if (
+								!(currentState.name !== userToUpdate.name) &&
+								userToUpdate.name.length < 3
+							) {
+								setStateUserToUpdate((prevState) => ({
+									...prevState,
+									errors: {
+										...prevState.errors,
+										name: { message: "Hay un error en el nombre" },
+									},
+								}));
+							}
+
+							if (
+								!(currentState.email !== userToUpdate.email) &&
+								!EMAIL_REGEX.test(userToUpdate.email)
+							) {
+								setStateUserToUpdate((prevState) => ({
+									...prevState,
+									errors: {
+										...prevState.errors,
+										email: { message: "Hay un error en el email" },
+									},
+								}));
+							}
+						} else {
+							update({
+								...userToUpdate,
+								name: userToUpdate?.name,
+								email: userToUpdate?.email,
+							});
+							setStateUserToUpdate((prevState) => ({
+								...prevState,
+								users: stateUserToUpdate?.users?.filter(
+									(user) => user.id !== userToUpdate?.id,
+								),
+							}));
+						}
+					}
 				});
 			}
-			setStateUserToUpdate(
-				stateUserToUpdate?.filter((user) => user.id !== userToUpdate?.id),
-			);
 		},
 		[stateUserToUpdate, setStateUserToUpdate],
 	);
 
 	const ifNotUserToUpdated =
-		stateUserToUpdate === undefined || stateUserToUpdate.length === 0;
+		stateUserToUpdate.users === undefined ||
+		stateUserToUpdate.users?.length === 0;
 
 	return {
 		stateUserToUpdate,

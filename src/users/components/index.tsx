@@ -69,6 +69,8 @@ function UserComponent({ user }: UserPropComponent) {
 		user,
 	);
 
+	console.log(ifNotUserToUpdated);
+
 	return (
 		<>
 			<TableCell>{user.id}</TableCell>
@@ -101,7 +103,11 @@ function UserInformation({
 			<TableCell>
 				<p>{user.email}</p>
 			</TableCell>
-			<Actions user={user} userToUpdate={userToUpdate} isButton={isButton} />
+			<ButtonsActions
+				user={user}
+				userToUpdate={userToUpdate}
+				isButton={isButton}
+			/>
 		</>
 	);
 }
@@ -111,7 +117,10 @@ export function EditUser({
 	userToUpdate,
 	isButton,
 }: UserPropChildComponent) {
+	const { stateUserToUpdate } = useUpdateUserInformation();
 	const { updateProperty } = useUpdateUserProperty();
+
+	console.log(stateUserToUpdate.errors);
 
 	return (
 		<>
@@ -122,6 +131,11 @@ export function EditUser({
 					value={userToUpdate?.name}
 					onChange={(event) => updateProperty(event, userToUpdate, "name")}
 				/>
+				{stateUserToUpdate.errors.name && (
+					<span className="text-red-500">
+						{stateUserToUpdate.errors.name.message}
+					</span>
+				)}
 			</TableCell>
 			<TableCell>
 				<TextInput
@@ -129,13 +143,26 @@ export function EditUser({
 					value={userToUpdate?.email}
 					onChange={(event) => updateProperty(event, userToUpdate, "email")}
 				/>
+				{stateUserToUpdate.errors.email && (
+					<span className="text-red-500">
+						{stateUserToUpdate.errors.email.message}
+					</span>
+				)}
 			</TableCell>
-			<Actions user={user} userToUpdate={userToUpdate} isButton={isButton} />
+			<ButtonsActions
+				user={user}
+				userToUpdate={userToUpdate}
+				isButton={isButton}
+			/>
 		</>
 	);
 }
 
-function Actions({ user, userToUpdate, isButton }: UserPropChildComponent) {
+function ButtonsActions({
+	user,
+	userToUpdate,
+	isButton,
+}: UserPropChildComponent) {
 	return (
 		<TableCell>
 			<div className="flex items-center gap-2">
