@@ -4,7 +4,11 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { CreateUserInfo, User, UserRepository, UserToUpdate } from "../models";
 import { addUserSchema } from "../schemas";
 import { selectUserData } from "../store";
-import { createNewUser, deleteUserById, updateUser } from "../store/slice";
+import {
+	createNewUser,
+	deleteUserById,
+	updateUser,
+} from "../store/redux.slice";
 import { useAppDispatch, useAppSelector } from "./redux";
 
 export const useUserManagement = (): UserRepository => {

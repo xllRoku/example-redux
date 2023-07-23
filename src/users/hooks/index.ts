@@ -1,6 +1,6 @@
 import { useUpdateUserInformation } from "../context/updateUserInformation";
 import { User, UserToUpdate } from "../models";
-import type { StateUserToUpdate } from "./actions";
+import type { StateUserToUpdate } from "./management";
 
 export const useGetUserToUpdate = (
 	stateUserToUpdate: StateUserToUpdate,
@@ -27,7 +27,7 @@ export const useGetUserToUpdate = (
 	return state;
 };
 
-export const useUpdateProperty = () => {
+export const useUpdateUserProperty = () => {
 	const { setStateUserToUpdate } = useUpdateUserInformation();
 
 	const updateProperty = (

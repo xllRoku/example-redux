@@ -3,7 +3,7 @@ import { RootState, store } from ".";
 import { errorMessage, succesMessage } from "../../toast";
 import { client } from "../client";
 import { User } from "../models";
-import { rollbackUser } from "./slice";
+import { rollbackUser } from "./redux.slice";
 
 export const persistanceLocalStorageMiddleware: Middleware =
 	(store) => (next) => (action) => {

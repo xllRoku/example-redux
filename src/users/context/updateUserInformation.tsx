@@ -7,7 +7,7 @@ import {
 	type IfNotUserToUpdated,
 	type SetStateUserToUpdate,
 	type StateUserToUpdate,
-} from "../hooks/actions";
+} from "../hooks/management";
 
 interface UpdateUserInformationContext {
 	stateUserToUpdate: StateUserToUpdate;

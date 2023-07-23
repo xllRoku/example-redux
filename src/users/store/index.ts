@@ -2,8 +2,8 @@ import { configureStore } from "@reduxjs/toolkit";
 import {
 	persistanceLocalStorageMiddleware,
 	syncWithDatabaseMiddleware,
-} from "./middlewares";
-import usersReducer from "./slice";
+} from "./redux.middlewares";
+import usersReducer from "./redux.slice";
 
 export const store = configureStore({
 	reducer: {
