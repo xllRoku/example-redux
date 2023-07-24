@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCallback, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { MessageErrors } from "../constans";
 import { CreateUserInfo, User, UserRepository, UserToUpdate } from "../models";
 import { EMAIL_REGEX, addUserSchema } from "../schemas";
 import { selectUserData } from "../store";
@@ -91,18 +92,15 @@ export const useUpdateUser = (update: UserRepository["update"]) => {
 			email: { message: "" },
 		};
 
-		if (
-			!(currentUser.name !== userToUpdate.name) &&
-			userToUpdate.name.length < 3
-		) {
-			errors.name.message = "Hay un error en el nombre";
+		const IsNotTheSameNameValue = !(currentUser.name !== userToUpdate.name);
+		const IsNotThemSameEmailValue = !(currentUser.email !== userToUpdate.email);
+
+		if (IsNotTheSameNameValue && userToUpdate.name.length < 3) {
+			errors.name.message = MessageErrors.name;
 		}
 
-		if (
-			!(currentUser.email !== userToUpdate.email) &&
-			!EMAIL_REGEX.test(userToUpdate.email)
-		) {
-			errors.email.message = "Hay un error en el email";
+		if (IsNotThemSameEmailValue && !EMAIL_REGEX.test(userToUpdate.email)) {
+			errors.email.message = MessageErrors.email;
 		}
 
 		return errors;
@@ -118,7 +116,7 @@ export const useUpdateUser = (update: UserRepository["update"]) => {
 		}));
 	};
 
-	const setUserToUpdateErrors = (errors: {
+	const setErrors = (errors: {
 		name: {
 			message: string;
 		};
@@ -136,8 +134,15 @@ export const useUpdateUser = (update: UserRepository["update"]) => {
 		}));
 	};
 
-	const takeOutUser = (userToUpdate: User) =>
+	const takeOutFromStateUser = (userToUpdate: User) =>
 		stateUserToUpdate?.users?.filter((user) => user.id !== userToUpdate?.id);
+
+	const takeOutUser = (userToUpdate: User) => {
+		setStateUserToUpdate((prevState) => ({
+			...prevState,
+			users: takeOutFromStateUser(userToUpdate),
+		}));
+	};
 
 	const handleUpdate = useCallback(
 		(userToUpdate: UserToUpdate) => {
@@ -146,17 +151,14 @@ export const useUpdateUser = (update: UserRepository["update"]) => {
 				const errors = validateUser(userToUpdate);
 
 				if (errors.name.message || errors.email.message) {
-					setUserToUpdateErrors(errors);
+					setErrors(errors);
 				} else {
 					update({
 						...userToUpdate,
 						name: userToUpdate?.name,
 						email: userToUpdate?.email,
 					});
-					setStateUserToUpdate((prevState) => ({
-						...prevState,
-						users: takeOutUser(userToUpdate),
-					}));
+					takeOutUser(userToUpdate);
 				}
 			}
 		},

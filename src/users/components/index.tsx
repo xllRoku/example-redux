@@ -69,8 +69,6 @@ function UserComponent({ user }: UserPropComponent) {
 		user,
 	);
 
-	console.log(ifNotUserToUpdated);
-
 	return (
 		<>
 			<TableCell>{user.id}</TableCell>

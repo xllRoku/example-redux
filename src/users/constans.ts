@@ -5,3 +5,9 @@ export const FORM_NAMES = {
 	EMAIL: "email",
 	GITHUB: "github",
 };
+
+export const MessageErrors = {
+	name: "Hay un error en el nombre",
+	email: "Hay un error en el email",
+	github: "Hay un error en el github",
+};
