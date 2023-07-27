@@ -1,6 +1,6 @@
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
-import type { CreateUserInfo, User } from "../models";
+import { CreateUserInfo, User } from "../models";
 
 const DEFAULT_STATE = [
 	{

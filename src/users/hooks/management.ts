@@ -2,7 +2,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useCallback, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { MessageErrors } from "../constans";
-import { CreateUserInfo, User, UserRepository, UserToUpdate } from "../models";
+import { CreateUserInfo, User, UserToUpdate } from "../models";
+import { UserRepository } from "../repository";
 import { EMAIL_REGEX, addUserSchema } from "../schemas";
 import { selectUserData } from "../store";
 import {

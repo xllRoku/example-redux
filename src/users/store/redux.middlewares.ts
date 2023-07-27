@@ -11,7 +11,7 @@ export const persistanceLocalStorageMiddleware: Middleware =
 		localStorage.setItem("__redux__state__", JSON.stringify(store.getState()));
 	};
 
-const handleAddNewUser = (userToAdd: User) => {
+const handleCreateNewUser = (userToAdd: User) => {
 	client("users", "POST", userToAdd)
 		.then((res) => {
 			if (res) {
@@ -53,8 +53,8 @@ export const syncWithDatabaseMiddleware: Middleware =
 		next(action);
 
 		switch (action.type) {
-			case "users/addNewUser":
-				handleAddNewUser(action.payload as User);
+			case "users/createNewUser":
+				handleCreateNewUser(action.payload as User);
 				break;
 			case "users/deleteUserById":
 				handleDeleteUserById(action.payload as string, previousState);
