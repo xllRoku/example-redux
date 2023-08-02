@@ -12,6 +12,14 @@ export const handlers = [
 			);
 		},
 	),
+	rest.get("https://unavatar.io/github/john", (_req, res, ctx) => {
+		return res(
+			ctx.status(200),
+			ctx.json({
+				url: "https://unavatar.io/github/john",
+			}),
+		);
+	}),
 	rest.get("/api/user", (_req, res, ctx) => {
 		return res(
 			ctx.json([

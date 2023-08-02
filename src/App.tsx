@@ -6,11 +6,11 @@ import { useUserManagement } from "./users/hooks/management";
 
 export default App;
 function App() {
-	const { create } = useUserManagement();
+	const { create, getUsers } = useUserManagement();
 
 	return (
 		<>
-			<ListOfUsers />
+			<ListOfUsers getUsers={getUsers} />
 			<CreateNewUSer create={create} />
 			<Toaster richColors />
 		</>

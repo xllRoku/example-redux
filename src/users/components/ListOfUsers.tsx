@@ -1,10 +1,12 @@
 import { UpdateUserInformationProvider } from "../context/updateUserInformation";
-import { useUserManagement } from "../hooks/management";
+import { User } from "../models";
 import { UserComponent } from "./UserComponent";
 
-export function ListOfUsers() {
-	const { getUsers } = useUserManagement();
+type ListOfUsersProps = {
+	getUsers: () => User[];
+};
 
+export function ListOfUsers({ getUsers }: ListOfUsersProps) {
 	const users = getUsers();
 
 	return (

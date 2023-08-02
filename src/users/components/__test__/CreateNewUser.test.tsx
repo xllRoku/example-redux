@@ -2,15 +2,11 @@ import { fireEvent, screen, waitFor } from "@testing-library/react";
 import { renderWithProviders } from "../../../utils/test-utils";
 import { CreateNewUSer } from "../CreateNewUSer";
 
+const mockedCreate = vi.fn();
+
 describe("CreateNewUser Component", () => {
-	beforeAll(() => {
-		vi.resetAllMocks();
-	});
-
 	it("should render the form with input fields and a submit button", () => {
-		const mockCreate = vi.fn();
-
-		renderWithProviders(<CreateNewUSer create={mockCreate} />);
+		renderWithProviders(<CreateNewUSer create={mockedCreate} />);
 
 		expect(
 			screen.getByPlaceholderText(/Aquí va el nombre/i),
@@ -25,9 +21,7 @@ describe("CreateNewUser Component", () => {
 	});
 
 	it("should display error messages for invalid input", async () => {
-		const mockCreate = vi.fn();
-
-		renderWithProviders(<CreateNewUSer create={mockCreate} />);
+		renderWithProviders(<CreateNewUSer create={mockedCreate} />);
 
 		const nameInput = screen.getByPlaceholderText("Aquí va el nombre");
 		const emailInput = screen.getByPlaceholderText("Aquí va el email");
@@ -78,9 +72,7 @@ describe("CreateNewUser Component", () => {
 	});
 
 	it("should call the create function on form submission with valid data", async () => {
-		const mockCreate = vi.fn();
-
-		renderWithProviders(<CreateNewUSer create={mockCreate} />);
+		renderWithProviders(<CreateNewUSer create={mockedCreate} />);
 
 		const nameInput = screen.getByPlaceholderText(/Aquí va el nombre/i);
 		const emailInput = screen.getByPlaceholderText(/Aquí va el email/i);
@@ -93,12 +85,10 @@ describe("CreateNewUser Component", () => {
 
 		fireEvent.click(submitButton);
 
-		await waitFor(() => {
-			expect(mockCreate).toHaveBeenCalledWith({
-				name: "John Doe",
-				email: "john@example.com",
-				github: "johndoe",
-			});
+		expect(mockedCreate).toBeCalledWith({
+			name: "John Doe",
+			email: "john@example.com",
+			github: "johndoe",
 		});
 	});
 });
